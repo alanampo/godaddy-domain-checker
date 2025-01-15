@@ -20,13 +20,14 @@ class DomainController extends Controller
 
         $result = $this->goDaddyService->checkDomainAvailability($request->input('domain'));
         $whoisInfo = NULL;
+        $dnsRecords = NULL;
+        $suggestions = NULL;
         if (!$result['available']) {
             $whoisInfo = $this->goDaddyService->getWhoisInfo($request->input('domain'));
-        }
-        $dnsRecords = NULL;
-        if (!$result['available']) {
             $dnsRecords = $this->goDaddyService->checkDnsRecords($request->input('domain'));
+            $suggestions = $this->goDaddyService->suggestAlternateDomains($request->input('domain'));
         }
-        return view('domain-check', compact('result', 'whoisInfo', 'dnsRecords'));
+
+        return view('domain-check', compact('result', 'whoisInfo', 'dnsRecords', 'suggestions'));
     }
 }

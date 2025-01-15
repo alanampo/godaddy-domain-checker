@@ -42,6 +42,18 @@
         @elseif(isset($whoisInfo['error']))
             <p>{{ $whoisInfo['error'] }}</p>
         @endif
+
+        @if(isset($suggestions) && !isset($suggestions['error']))
+            <h3>Ti consigliamo altre opzioni:</h3>
+            <ul>
+                @foreach($suggestions as $suggestedDomain)
+                    <li>{{ $suggestedDomain['domain'] }}</li>
+                @endforeach
+            </ul>
+        @elseif(isset($suggestions['error']))
+            <p>{{ $suggestions['error'] }}</p>
+        @endif
+
         @if(isset($dnsRecords))
             <h3>DNS Records:</h3>
             @foreach($dnsRecords as $type => $records)

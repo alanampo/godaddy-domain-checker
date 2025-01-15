@@ -3,6 +3,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Iodev\Whois\Factory;
+use Illuminate\Support\Facades\Http;
 class GoDaddyService
 {
     protected $client;
@@ -60,5 +61,28 @@ class GoDaddyService
             'MX' => dns_get_record($domain, DNS_MX),
             'CNAME' => dns_get_record($domain, DNS_CNAME),
         ];
+    }
+
+    public function suggestAlternateDomains($domain)
+    {
+        $apiKey = env('GODADDY_API_KEY');
+        $apiSecret = env('GODADDY_API_SECRET');
+        $url = "https://api.ote-godaddy.com/v1/domains/suggest";
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'sso-key ' . $apiKey . ':' . $apiSecret,
+            ])->get($url, [
+                        'query' => $domain,
+                    ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            } else {
+                return ['error' => 'Si è verificato un errore: ' . $response->body()];
+            }
+        } catch (\Exception $e) {
+            return ['error' => 'Errore: ' . $e->getMessage()];
+        }
     }
 }
